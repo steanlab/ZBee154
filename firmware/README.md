@@ -10,7 +10,9 @@ The source, the build overlay and the build workflow are in the private reposito
 
 ## Flashing
 
-**Not yet verified on real hardware; try at your own risk and back up the stock flash first.** The wiring is the same as badge154 (same tag): **SWS** to the adapter's **TXD**, **NRST** to the adapter's **DTR**, **GND**, and **3.3 V** only if the battery is out. The flashing tool is specific to the Telink SDK this firmware is built with (not atc1441's BLE web flasher, which only understands the BLE firmware's own image format); the exact tool and steps will be filled in here once flashing has actually been tried on a tag.
+**Not yet verified on real hardware; try at your own risk and back up the stock flash first.** The wiring is the same as badge154 (same tag): **SWS** to the adapter's **TXD**, **NRST** to the adapter's **DTR**, **GND**, and **3.3 V** only if the battery is out.
+
+Recommended tool to try first: atc1441's WebSerial flasher at [`ATC_BLE_OEPL_Image_Upload.html`](https://atc1441.github.io/ATC_BLE_OEPL_Image_Upload.html) -- the same page badge154 already uses successfully on this exact tag over this exact wiring. This is a recommendation, not a confirmed procedure: it is not yet known whether this page validates the uploaded file against the BLE firmware's own format or just writes raw bytes, so it may or may not accept `ZBee154.bin` as-is. See [ZBee154-src/firmware/README.md](https://github.com/steanlab/ZBee154-src/blob/main/firmware/README.md#flash----recommendation-not-yet-tried-on-a-tag) for the full reasoning and a fallback tool if this one doesn't work.
 
 ## Pairing with Home Assistant / zigbee2mqtt / ZHA
 

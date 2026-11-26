@@ -11,7 +11,7 @@ A **Zigbee 3.0** firmware for the **Hanshow Nebular 154** e-paper tag (1.54", 20
 - Joins as a normal Zigbee 3.0 End Device, no custom coordinator software needed for most of it.
 - **Battery** (voltage, percentage), **Identify**, **Scenes**, **Poll Control**, **Diagnostics**, **OTA updates**: all standard Zigbee clusters, recognised out of the box by Home Assistant / zigbee2mqtt / ZHA.
 - **Panel: two lines of text, pushed from the coordinator.** Write them with a small custom ZCL cluster (`0xFC00`); see [Pairing](firmware/README.md#pairing-with-home-assistant--zigbee2mqtt--zha") for how to set them today, and [ZBee154-src/docs/PROTOCOL.md](https://github.com/steanlab/ZBee154-src/blob/main/docs/PROTOCOL.md) for the full attribute layout if you want to write a friendlier integration (a zigbee2mqtt converter or ZHA quirk -- neither exists yet).
-- **NFC tap detection** in firmware (not yet surfaced as a Zigbee command) and an **RGB LED** colour-cycle routine (not yet wired to a trigger).
+- **NFC tap** makes the **blue LED breathe** (smooth fade in/out, ~3 s) as a local "device discovery" acknowledgement -- not yet surfaced to the coordinator as a Zigbee command.
 
 Everything that is not yet finished is listed honestly, not silently skipped: see [ZBee154-src's README](https://github.com/steanlab/ZBee154-src#not-yet-done-flagged-explicitly-not-silently-dropped) for the full list (chip temperature reporting, LED trigger, NFC-as-command, the converter/quirk, and flashing instructions for this specific build).
 
