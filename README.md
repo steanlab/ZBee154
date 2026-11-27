@@ -1,39 +1,41 @@
 # ZBee154
 
-A **Zigbee 3.0** firmware for the **Hanshow Nebular 154** e-paper tag (1.54", 200x200 px, black/white/yellow/red, Telink TLSR8359): a Zigbee End Device that works with **Home Assistant, zigbee2mqtt and ZHA**, showing text pushed from the coordinator on the panel. A Zigbee sibling of [badge154](https://github.com/steanlab/badge154), the BLE slideshow firmware for the same hardware, by the same author.
+Zigbee 3.0 End Device firmware for the **Hanshow Nebular 154** e-paper tag (1.54", 200x200, black/white/yellow/red, Telink TLSR8359) -- a Zigbee port of [badge154](https://github.com/steanlab/badge154).
 
-Flashed and running on real hardware. NFC tap detection is confirmed working on a real tag.
+> **Build verified; real-tag Zigbee pairing pending.** NFC tap detection and wired flashing have been confirmed on real hardware on an earlier build; coordinator pairing, Home Assistant (ZHA / zigbee2mqtt) integration, e-paper text updates, `On/Off` tap reporting, and `notify_led` blinking have not been tested on a live Zigbee network yet.
+>
+> Use at your own risk, no warranty. Unofficial: not affiliated with Hanshow, Telink, the Zigbee Alliance / Connectivity Standards Alliance, Home Assistant or Koenkk/zigbee2mqtt.
 
-## What the device does
+## What it does
 
-**On the Zigbee network.** Joins as a plain Zigbee 3.0 End Device (Sleepy End Device), the way any battery-powered Zigbee sensor does, with no custom coordinator software needed for most of it:
+- **200x200 four-colour e-paper panel** (custom cluster `0xFC00`): shows up to **four lines of uppercase ASCII text** (up to 16 characters per line) with a selectable **colour accent** (`normal` black / `yellow` / `red`) on a white background, plus a read-only `panel_timeouts` diagnostic counter (`0` on a healthy panel).
+- **LED alert notifications from Home Assistant** (attribute `0x0006` on cluster `0xFC00`): battery-friendly pulse-blink (`off` / `red` / `green` / `blue` / `yellow`, 60 ms on / 440 ms off, auto-stops after 5 s) without triggering a 25 s screen refresh.
+- **NFC tap as button & Zigbee trigger**: tapping the tag wakes it from deep sleep, fades the blue LED for 5 s, runs a 30 s fast-poll burst + Poll Control check-in (or immediate rejoin if the parent was lost), and sends a standard Zigbee **`On/Off` `Toggle` command** (`0x0006` client cluster) to bound devices / the coordinator (`zha_event` in ZHA, `action: toggle` in zigbee2mqtt).
+- **Battery** (Power Configuration cluster): voltage and percentage read via the SDK's `battery.c`.
+- **Poll Control, Diagnostics, Scenes, Identify**: standard clusters from the SDK template (note: `Identify` is registered, while physical LED blinking is handled via NFC tap and `0xFC00` `notify_led`).
+- **OTA** (Zigbee OTA Upgrade cluster): over-the-air firmware updates via zigbee2mqtt / ZHA using the `.zigbee` file.
 
-- **Battery**: voltage and percentage (Power Configuration cluster).
-- **Identify**: the standard "make yourself known" cluster, so a coordinator can locate a specific device among several.
-- **Scenes, Poll Control, Diagnostics**: standard clusters. Poll Control governs how often a sleepy end device checks in with its parent for queued messages.
-- **OTA (Over-The-Air) updates**: the standard Zigbee OTA Upgrade cluster, the same mechanism zigbee2mqtt/ZHA already use to push firmware updates to other Zigbee devices.
-- These are all recognised out of the box by Home Assistant, zigbee2mqtt and ZHA. No converter, no quirk, nothing custom.
-
-**On the panel.** A 1.54" e-paper display, 200x200 pixels, four printable colours (black, white, yellow, red), showing **up to four lines of text plus a colour accent** that the coordinator pushes to it: a short string to each of four attributes, and a normal/yellow/red accent attribute, all on a small custom cluster (`0xFC00`), rendered in an original bitmap font (uppercase, up to 16 characters per line), full refresh in about 25 seconds. A boot splash shows the tag's name while it waits to be paired. A ZHA quirk and a zigbee2mqtt external converter are both available for setting the panel content from Home Assistant/zigbee2mqtt.
-
-**NFC tap.** Tapping the tag with a phone's NFC reader acts as this firmware's pairing button, the same role a physical button plays on most battery Zigbee sensors: a brief fast-poll burst if already joined, or an immediate rejoin attempt if the parent was lost. The blue LED also breathes for about 5 seconds as a visual confirmation.
-
-**Power.** Runs on the tag's own battery and spends most of its time in deep sleep between Zigbee poll intervals and panel refreshes, the normal behaviour for a Sleepy End Device.
+Both a [ZHA quirk](zha/README.md) and a [zigbee2mqtt external converter](z2m/README.md) are included for cluster `0xFC00`.
 
 ## Quick start
 
-1. Download `ZBee154-v0.2.2.bin` from the [Releases](https://github.com/steanlab/ZBee154/releases) page (a copy is in [`firmware/prebuilt/`](firmware/prebuilt)) and flash it ([`firmware/README.md`](firmware/README.md)).
-2. Put your Zigbee coordinator into pairing mode and power on the tag.
-3. Battery, identify and OTA appear automatically. To set the panel content, use the ZHA quirk, the zigbee2mqtt converter, or write to cluster `0xFC00` directly (attributes `0x0000`-`0x0003` = lines 1-4, `0x0004` = accent: 0 normal, 1 yellow, 2 red).
+1. Download **`ZBee154-v0.2.3.bin`** from [Releases](../../releases) (or from [`firmware/prebuilt/`](firmware/prebuilt/)). For subsequent over-the-air updates after the initial wired flash, use the **`.zigbee`** file.
+2. **Back up the stock flash** before writing anything, then flash `.bin` over a USB-UART adapter (`SWS` -> `TXD`, `NRST` -> `DTR`, `GND`, and `3.3 V` only if the battery is out). See [`firmware/README.md`](firmware/README.md) for wiring and flashing tools.
+3. Pair the tag with your Zigbee coordinator.
+4. Install [`zha/quirk_zbee154.py`](zha/quirk_zbee154.py) (ZHA) or [`z2m/zbee154.mjs`](z2m/zbee154.mjs) (zigbee2mqtt) to set panel lines, accent colour, LED alerts, and bind NFC `toggle` actions.
+
+## Not yet done
+
+- **Chip temperature reporting**: no calibrated reading function exists in this SDK, so the Temperature Measurement cluster is intentionally left out rather than publishing an uncalibrated number.
+- **Persistence across battery removal**: panel lines and accent are kept across deep-sleep cycles in retention RAM, but reset to the boot splash (`ZBEE154` / `WAITING...`) on a full power loss or reset (NV flash persistence is not implemented yet).
+- **Live Zigbee / Home Assistant verification**: pairing with a coordinator and testing the updated firmware with ZHA and zigbee2mqtt on real hardware.
 
 ## Repository
 
 | Path | What |
 |---|---|
-| [`firmware/`](firmware/README.md) | flashing and pairing instructions. `prebuilt/` holds the latest released binaries with their checksums |
-| [`LICENSE`](LICENSE) | MIT |
-| [`NOTICE.md`](NOTICE.md) | third-party licences and provenance of what is inside the compiled firmware |
-
-## Credits and licence
-
-MIT licence, see [`LICENSE`](LICENSE). Built on [pvvx/ZigbeeTLc](https://github.com/pvvx/ZigbeeTLc). A similar project for the BLE side of the same tag: [badge154](https://github.com/steanlab/badge154).
+| [`firmware/`](firmware/README.md) | flashing instructions and [`prebuilt/`](firmware/prebuilt/) binaries (`.bin`, `.zigbee`) with SHA-256 checksums |
+| [`zha/`](zha/README.md) | Home Assistant ZHA custom quirk ([`quirk_zbee154.py`](zha/quirk_zbee154.py)) for cluster `0xFC00` |
+| [`z2m/`](z2m/README.md) | zigbee2mqtt external converter ([`zbee154.mjs`](z2m/zbee154.mjs)) for cluster `0xFC00`, battery, OTA, and NFC `toggle` |
+| [`LICENSE`](LICENSE) | MIT licence |
+| [`NOTICE.md`](NOTICE.md) | third-party licences and provenance |
