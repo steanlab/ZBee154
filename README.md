@@ -1,6 +1,6 @@
 # ZBee154
 
-Zigbee 3.0 End Device firmware for the **Hanshow Nebular 154** e-paper tag (1.54", 200x200, black/white/yellow/red, Telink TLSR8359) -- a Zigbee port of [badge154](https://github.com/steanlab/badge154).
+Zigbee 3.0 End Device firmware for the **Hanshow Nebular 154** e-paper tag (1.54", 200x200, black/white/yellow/red, Telink TLSR8359) - a Zigbee port of [badge154](https://github.com/steanlab/badge154).
 
 > **Build verified; real-tag Zigbee pairing pending.** NFC tap detection and wired flashing have been confirmed on real hardware on an earlier build; coordinator pairing, Home Assistant (ZHA / zigbee2mqtt) integration, e-paper text updates, `On/Off` tap reporting, and `notify_led` blinking have not been tested on a live Zigbee network yet.
 >
