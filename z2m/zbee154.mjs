@@ -6,7 +6,7 @@
 
 import {Zcl} from 'zigbee-herdsman';
 import {presets as e, access as ea} from 'zigbee-herdsman-converters/lib/exposes';
-import {battery, identify, ota, deviceAddCustomCluster} from 'zigbee-herdsman-converters/lib/modernExtend';
+import {battery, identify, ota, deviceAddCustomCluster, commandsOnOff} from 'zigbee-herdsman-converters/lib/modernExtend';
 
 const PANEL_CLUSTER = 'manuSpecificZBee154Panel';
 const PANEL_KEYS = ['line1', 'line2', 'line3', 'line4', 'accent'];
@@ -87,11 +87,12 @@ const definition = {
     zigbeeModel: ['ZBee154'], // matches ZCL_BASIC_MODEL_ID in firmware/src/board_zbee154.h
     model: 'ZBee154',
     vendor: 'steanlab',
-    description: 'Zigbee e-paper tag (Hanshow Nebular 154), four text lines plus a colour accent on cluster 0xFC00.',
+    description: 'Zigbee e-paper tag (Hanshow Nebular 154), four text lines plus a colour accent on cluster 0xFC00, plus NFC tap toggle.',
     extend: [
         battery(),
         identify(),
         ota(),
+        commandsOnOff({commands: ['toggle'], bind: true}),
         deviceAddCustomCluster(PANEL_CLUSTER, {
             name: PANEL_CLUSTER,
             ID: 0xfc00,
