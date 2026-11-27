@@ -42,6 +42,10 @@ const fzLocal = {
             if (rawLed !== undefined) {
                 result.notify_led = ledByValue[rawLed] ?? 'off';
             }
+            const rawTemp = msg.data.panelTempRaw !== undefined ? msg.data.panelTempRaw : msg.data[7];
+            if (rawTemp !== undefined) {
+                result.panel_temp_raw = rawTemp;
+            }
             return Object.keys(result).length ? result : undefined;
         },
     },
@@ -92,6 +96,12 @@ const tzLocal = {
             await entity.read(PANEL_CLUSTER, ['panelTimeouts']);
         },
     },
+    zbee154_panel_temp_raw: {
+        key: ['panel_temp_raw'],
+        convertGet: async (entity, key, meta) => {
+            await entity.read(PANEL_CLUSTER, ['panelTempRaw']);
+        },
+    },
 };
 
 const definition = {
@@ -115,13 +125,14 @@ const definition = {
                 accent: {name: 'accent', ID: 0x0004, type: Zcl.DataType.UINT8, write: true, max: 0xff},
                 panelTimeouts: {name: 'panelTimeouts', ID: 0x0005, type: Zcl.DataType.UINT8},
                 notifyLed: {name: 'notifyLed', ID: 0x0006, type: Zcl.DataType.UINT8, write: true, max: 0xff},
+                panelTempRaw: {name: 'panelTempRaw', ID: 0x0007, type: Zcl.DataType.UINT16},
             },
             commands: {},
             commandsResponse: {},
         }),
     ],
     fromZigbee: [fzLocal.zbee154_panel],
-    toZigbee: [tzLocal.zbee154_panel, tzLocal.zbee154_panel_timeouts],
+    toZigbee: [tzLocal.zbee154_panel, tzLocal.zbee154_panel_timeouts, tzLocal.zbee154_panel_temp_raw],
     exposes: [
         e.text('line1', ea.ALL).withDescription('Line 1 shown on the panel (uppercase ASCII, up to 16 characters)'),
         e.text('line2', ea.ALL).withDescription('Line 2 shown on the panel (uppercase ASCII, up to 16 characters)'),
@@ -133,6 +144,8 @@ const definition = {
             .withDescription('Pulse-blink LED notification for 5 seconds (auto-stops to save battery)'),
         e.numeric('panel_timeouts', ea.STATE_GET).withValueMin(0).withValueMax(255)
             .withDescription('Diagnostic: how many panel BUSY waits have timed out (0 = healthy). Read-only on the device'),
+        e.numeric('panel_temp_raw', ea.STATE_GET).withValueMin(0).withValueMax(65535)
+            .withDescription('Diagnostic: raw uncalibrated 16-bit panel controller temperature register (CMD 0x40). Read-only'),
     ],
 };
 
