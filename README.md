@@ -19,7 +19,7 @@ Both a [ZHA quirk](zha/README.md) and a [zigbee2mqtt external converter](z2m/REA
 
 ## Quick start
 
-1. Download **`ZBee154-v0.2.3.bin`** from [Releases](../../releases) (or from [`firmware/prebuilt/`](firmware/prebuilt/)). For subsequent over-the-air updates after the initial wired flash, use the **`.zigbee`** file.
+1. Download **`ZBee154-v0.2.4.bin`** from [Releases](../../releases) (or from [`firmware/prebuilt/`](firmware/prebuilt/)). For subsequent over-the-air updates after the initial wired flash, use the **`.zigbee`** file.
 2. **Back up the stock flash** before writing anything, then flash `.bin` over a USB-UART adapter (`SWS` -> `TXD`, `NRST` -> `DTR`, `GND`, and `3.3 V` only if the battery is out). See [`firmware/README.md`](firmware/README.md) for wiring and flashing tools.
 3. Pair the tag with your Zigbee coordinator.
 4. Install [`zha/quirk_zbee154.py`](zha/quirk_zbee154.py) (ZHA) or [`z2m/zbee154.mjs`](z2m/zbee154.mjs) (zigbee2mqtt) to set panel lines, accent colour, LED alerts, and bind NFC `toggle` actions.
