@@ -1,12 +1,4 @@
-"""ZHA quirk for ZBee154 (Hanshow Nebular 154 Zigbee e-paper tag, steanlab).
-
-Registers the custom manufacturer-specific cluster 0xFC00, which carries the four text lines,
-the colour accent, and the timeout diagnostic counter shown on the e-paper panel
-(see ../docs/PROTOCOL.md).
-
-Installation: copy this file into Home Assistant's configured custom quirks folder,
-restart Home Assistant, then re-pair or reconfigure the device.
-"""
+"""ZHA quirk for ZBee154 (Hanshow Nebular 154 Zigbee e-paper tag, steanlab)."""
 
 import zigpy.types as t
 from zigpy.quirks import CustomCluster
@@ -23,8 +15,18 @@ class ZBee154PanelAccent(t.enum8):
     Red = 0x02
 
 
+class ZBee154PanelLed(t.enum8):
+    """Short LED pulse-blink notification colour (auto-stops after 5 seconds)."""
+
+    Off = 0x00
+    Red = 0x01
+    Green = 0x02
+    Blue = 0x03
+    Yellow = 0x04
+
+
 class ZBee154PanelCluster(CustomCluster):
-    """Cluster 0xFC00: the four text lines and colour accent shown on the e-paper panel."""
+    """Cluster 0xFC00: e-paper panel text/accent, timeouts counter and LED notifications."""
 
     cluster_id = 0xFC00
     name = "ZBee154 Panel"
@@ -50,10 +52,11 @@ class ZBee154PanelCluster(CustomCluster):
         panel_timeouts = ZCLAttributeDef(
             id=0x0005, type=t.uint8_t, access="r", is_manufacturer_specific=False
         )
+        notify_led = ZCLAttributeDef(
+            id=0x0006, type=ZBee154PanelLed, access="rw", is_manufacturer_specific=False
+        )
 
 
-# "steanlab" / "ZBee154" match this device's own ZCL_BASIC_MFG_NAME / ZCL_BASIC_MODEL_ID
-# (see ../firmware/src/board_zbee154.h).
 (
     QuirkBuilder("steanlab", "ZBee154")
     .replaces(ZBee154PanelCluster, endpoint_id=1)
@@ -64,6 +67,14 @@ class ZBee154PanelCluster(CustomCluster):
         endpoint_id=1,
         translation_key="accent",
         fallback_name="Accent",
+    )
+    .enum(
+        "notify_led",
+        ZBee154PanelLed,
+        cluster_id=ZBee154PanelCluster.cluster_id,
+        endpoint_id=1,
+        translation_key="notify_led",
+        fallback_name="Notify LED",
     )
     .sensor(
         "panel_timeouts",
