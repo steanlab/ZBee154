@@ -22,7 +22,7 @@ Flashed and running on real hardware. NFC tap detection is confirmed working on 
 
 ## Quick start
 
-1. Download `ZBee154-v0.2.1.bin` from the [Releases](https://github.com/steanlab/ZBee154/releases) page (a copy is in [`firmware/prebuilt/`](firmware/prebuilt)) and flash it ([`firmware/README.md`](firmware/README.md)).
+1. Download `ZBee154-v0.2.2.bin` from the [Releases](https://github.com/steanlab/ZBee154/releases) page (a copy is in [`firmware/prebuilt/`](firmware/prebuilt)) and flash it ([`firmware/README.md`](firmware/README.md)).
 2. Put your Zigbee coordinator into pairing mode and power on the tag.
 3. Battery, identify and OTA appear automatically. To set the panel content, use the ZHA quirk, the zigbee2mqtt converter, or write to cluster `0xFC00` directly (attributes `0x0000`-`0x0003` = lines 1-4, `0x0004` = accent: 0 normal, 1 yellow, 2 red).
 
