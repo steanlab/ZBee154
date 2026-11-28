@@ -1,12 +1,12 @@
 [
   {
-    "fileName": "ZBee154-v0.2.6.zigbee",
-    "fileVersion": 21245953,
+    "fileName": "ZBee154-v0.2.7.zigbee",
+    "fileVersion": 21311489,
     "fileSize": 136098,
-    "url": "https://github.com/steanlab/ZBee154/releases/download/v0.2.6/ZBee154-v0.2.6.zigbee",
+    "url": "https://github.com/steanlab/ZBee154/releases/download/v0.2.7/ZBee154-v0.2.7.zigbee",
     "imageType": 576,
     "manufacturerCode": 4417,
-    "sha512": "74e5f0b986c0af3ac17cfc0df57fca4a92648ce1158d2076edd939cff0652de339f25378fc3d6db52623c0532bd6a36c8f37b0e8493de72e552a1253bc64cc1d",
+    "sha512": "9d884958aeb25f7cf9b2b676c7b8ca9b916dfd4db8db7454dbda3a124f0d9598414f07ab9556a00199388e50382703121849b99270c98e805d5e6b9609175de5",
     "otaHeaderString": "ZigbeeTLc OTA",
     "modelId": "ZBee154"
   }
