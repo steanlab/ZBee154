@@ -9,7 +9,7 @@ import {presets as e, access as ea} from 'zigbee-herdsman-converters/lib/exposes
 import {battery, identify, deviceAddCustomCluster, commandsOnOff} from 'zigbee-herdsman-converters/lib/modernExtend';
 
 const PANEL_CLUSTER = 'manuSpecificZBee154Panel';
-const PANEL_KEYS = ['line1', 'line2', 'line3', 'line4', 'accent', 'notify_led'];
+const PANEL_KEYS = ['line1', 'line2', 'line3', 'line4', 'accent', 'notify_led', 'invert'];
 const LINE_KEYS = ['line1', 'line2', 'line3', 'line4'];
 const MAX_LINE_LEN = 16;
 
@@ -46,6 +46,10 @@ const fzLocal = {
             if (rawTemp !== undefined) {
                 result.panel_temp_raw = rawTemp;
             }
+            const rawInvert = msg.data.invert !== undefined ? msg.data.invert : msg.data[8];
+            if (rawInvert !== undefined) {
+                result.invert = Boolean(rawInvert);
+            }
             return Object.keys(result).length ? result : undefined;
         },
     },
@@ -75,6 +79,10 @@ const tzLocal = {
                     const num = Object.prototype.hasOwnProperty.call(ledByName, rawVal) ? ledByName[rawVal] : 0;
                     payload.notifyLed = num;
                     state.notify_led = ledByValue[num];
+                } else if (k === 'invert') {
+                    const boolVal = typeof rawVal === 'boolean' ? rawVal : (rawVal === 'true' || rawVal === 1 || rawVal === 'ON' || rawVal === '1');
+                    payload.invert = boolVal;
+                    state.invert = boolVal;
                 } else {
                     const str = rawVal === null || rawVal === undefined ? '' : String(rawVal).slice(0, MAX_LINE_LEN);
                     payload[k] = str;
@@ -126,6 +134,7 @@ const definition = {
                 panelTimeouts: {name: 'panelTimeouts', ID: 0x0005, type: Zcl.DataType.UINT8},
                 notifyLed: {name: 'notifyLed', ID: 0x0006, type: Zcl.DataType.UINT8, write: true, max: 0xff},
                 panelTempRaw: {name: 'panelTempRaw', ID: 0x0007, type: Zcl.DataType.UINT16},
+                invert: {name: 'invert', ID: 0x0008, type: Zcl.DataType.BOOLEAN, write: true},
             },
             commands: {},
             commandsResponse: {},
@@ -140,6 +149,8 @@ const definition = {
         e.text('line4', ea.ALL).withDescription('Line 4 shown on the panel (uppercase ASCII, up to 16 characters)'),
         e.enum('accent', ea.ALL, ['normal', 'yellow', 'red'])
             .withDescription('Text colour for all four lines at once (background stays white)'),
+        e.binary('invert', ea.ALL, true, false)
+            .withDescription('Dark theme: inverted black background with white/accent text'),
         e.enum('notify_led', ea.ALL, ['off', 'red', 'green', 'blue', 'yellow'])
             .withDescription('Pulse-blink LED notification for 5 seconds (auto-stops to save battery)'),
         e.numeric('panel_timeouts', ea.STATE_GET).withValueMin(0).withValueMax(255)
