@@ -26,7 +26,7 @@ class ZBee154PanelLed(t.enum8):
 
 
 class ZBee154PanelCluster(CustomCluster):
-    """Cluster 0xFC00: e-paper panel text/accent, timeouts, raw temp and LED notifications."""
+    """Cluster 0xFC00: e-paper panel text/accent, timeouts, raw temp, invert, and LED notifications."""
 
     cluster_id = 0xFC00
     name = "ZBee154 Panel"
@@ -58,6 +58,9 @@ class ZBee154PanelCluster(CustomCluster):
         panel_temp_raw = ZCLAttributeDef(
             id=0x0007, type=t.uint16_t, access="r", is_manufacturer_specific=False
         )
+        invert = ZCLAttributeDef(
+            id=0x0008, type=t.Bool, access="rw", is_manufacturer_specific=False
+        )
 
 
 (
@@ -78,6 +81,13 @@ class ZBee154PanelCluster(CustomCluster):
         endpoint_id=1,
         translation_key="notify_led",
         fallback_name="Notify LED",
+    )
+    .switch(
+        "invert",
+        cluster_id=ZBee154PanelCluster.cluster_id,
+        endpoint_id=1,
+        translation_key="invert",
+        fallback_name="Invert",
     )
     .sensor(
         "panel_timeouts",
