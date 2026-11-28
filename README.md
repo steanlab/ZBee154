@@ -21,6 +21,8 @@ Both a [ZHA quirk](zha/README.md) and a [zigbee2mqtt external converter](z2m/REA
 
 1. Download **`ZBee154-v0.2.4.bin`** from [Releases](../../releases) (or from [`firmware/prebuilt/`](firmware/prebuilt/)). For subsequent over-the-air updates after the initial wired flash, use the **`.zigbee`** file.
 2. **Back up the stock flash** before writing anything, then flash `.bin` over a USB-UART adapter (`SWS` -> `TXD`, `NRST` -> `DTR`, `GND`, and `3.3 V` only if the battery is out). See [`firmware/README.md`](firmware/README.md) for wiring and flashing tools.
+> **Flashing back to another firmware or unbricking?**
+> If a web-flasher reports success but the tag still boots old firmware, the tag is entering deep sleep before SWS connects, or Flash SR2 protection is locked. See the **[Raspberry Pi Pico Recovery Guide](docs/RECOVERY.md)** to deterministically unlock and erase both boot slots.
 3. Pair the tag with your Zigbee coordinator.
 4. Install [`zha/quirk_zbee154.py`](zha/quirk_zbee154.py) (ZHA) or [`z2m/zbee154.mjs`](z2m/zbee154.mjs) (zigbee2mqtt) to set panel lines, accent colour, LED alerts, and bind NFC `toggle` actions.
 
@@ -39,3 +41,4 @@ Both a [ZHA quirk](zha/README.md) and a [zigbee2mqtt external converter](z2m/REA
 | [`z2m/`](z2m/README.md) | zigbee2mqtt external converter ([`zbee154.mjs`](z2m/zbee154.mjs)) for cluster `0xFC00`, battery, OTA, and NFC `toggle` |
 | [`LICENSE`](LICENSE) | MIT licence |
 | [`NOTICE.md`](NOTICE.md) | third-party licences and provenance |
+| [`docs/RECOVERY.md`](docs/RECOVERY.md) | Raspberry Pi Pico (RP2040) unbrick & Flash unlock guide |
